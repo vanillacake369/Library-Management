@@ -2,7 +2,8 @@
 
 ## UML
 
-![UML.png](readme%20649d8/UML.png)
+![UML](https://user-images.githubusercontent.com/75259783/162561426-fe7e57f0-f4ab-40ea-b2d5-deee91877c5e.png)
+
 
 ## 유사코드
 
