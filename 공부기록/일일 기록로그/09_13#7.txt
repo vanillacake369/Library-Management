@@ -1,0 +1,117 @@
+" 이거만큼 간단하고 잘 정리해놓은 게 없다! "
+
+#Client
+서버에 데이터 보내기
+ 
+
+서버에 데이터를 보내려면 먼저 소켓에서 OutputStream 객체를 가져와야 합니다.
+
+OutputStream output = socket.getOutputStream();
+ 
+
+객체를 가져 온 후에, OuputStream의 wirte() 메서드를 사용하여 보낼 바이트 배열을 쓸 수 있습니다.
+
+String realStr = "This is woolbro dev Note";
+byte[] data = realStr.getBytes(); //getBytes() 메서드를 사용 해 문자열을 Byte로 바꿔준다
+output.write(data);
+ 
+
+PrintWirte에 OutputStream을 래핑하여 다음과 같이 데이터를 텍스트 형식으로 보낼 수 있습니다.
+
+PrintWriter writer = new PrintWriter(output, true); //true 인수는 메소드 호출 후에 데이터 자동비우기 설정입니다.
+writer.println("This is a Message From Woolbro devNote"); 
+
+Step 3. 서버에서 데이터 읽기
+ 
+
+마찬가지로 서버에서 데이터를 읽으려면 클라이언트 소켓에서 InputStream 객체를 가져와야 합니다.
+
+InputStream input = socket.getInputStream();
+ 
+
+그런다음 InputStream에서 read() 메서드를 사용하여 데이터를 읽습니다.
+
+input.read(data); // byte[] data=....
+ 
+
+InputStreamReader 와 BufferedReader 또한 사용 할 수 있습니다.
+
+//InputStreamReader
+InputStreamReader reader = new InputStreamReader(input);
+int character = reader.read();
+
+
+//BufferedReader
+BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+String line = reader.readLine();
+
+
+출처: https://woolbro.tistory.com/28 [개발자 울이 노트]
+
+
+
+
+
+
+
+
+#Server
+
+Step 3. Read data from the Client
+ 
+
+Socket 객체가 반환 되면 (연결이 되면) InputStream을 사용하여 클라이언트에서 보낸 데이터를 읽을 수 있습니다.
+
+InputStream input = socket.getInputStream();
+ 
+
+InputStream은 데이터를 byte 배열로 읽기 때문에, 상위 레벨의 데이터를 읽으려면 InputStreamReader로 읽어줍니다.
+
+InputStreamReader reader = new InputStreamReader(input);
+int character = reader.read();  // reads a single character
+ 
+
+또한 BufferedReader에 InputStream을 래핑하여 데이터를 String으로 읽어옵니다.
+
+BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+String line = reader.readLine();    // reads a line of text
+ 
+
+Step 4. Send Data to the client
+ 
+
+Socket과 연결 된 클라이언트에게 OutputStream을 사용하여 데이터를 보냅니다.
+
+OutputStream output = socket.getOutputStream();
+ 
+
+PintWriter를  사용하여 텍스트 형식으로 데이터를 보낼 수 있습니다.
+
+PrintWriter writer = new PrintWriter(output, true);
+writer.println(“This is a message sent to the server”);
+
+Step 5. Close the client Connection
+ 
+
+Socket 통신이 완료 되면, close() 메서드를 사용하여 클라이언트와의 연결을 종료합니다.
+
+socket.close();
+close() 메서드는 소켓의 InputStream과 OutputStream을 닫아 주는 역할을 합니다.
+
+ 
+
+ 
+
+Step 6. Terminate the Server
+ 
+
+서버는 클라이언트에서 들어오는 요청을 기다리며 항상 실행되어 있어야 합니다.
+
+서버를 중지 해야 하는 경우에는 ServerSocket 인슽턴스의 close() 메서드를 호출하여 서버를 종료 해 줍니다.
+
+Client Connection을 종료하는 메서드와 명칭이 같지만, Client와의 연결을 끊는 것이 아니라 "서버"를 중지하는 역할을 합니다.
+
+serverSocket.close();
+
+
+출처: https://woolbro.tistory.com/29 [개발자 울이 노트]

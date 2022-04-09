@@ -1,0 +1,31 @@
+public ArrayList<BookDTO> selectBookAll(ArrayList<BookDTO> list) {
+		String sql = "SELECT * FROM tblBook ORDER BY num ASC";
+		try {
+			ps = conn.prepareStatement(sql);	//ps:PreparedStatement
+			rs = ps.executeQuery();	// rs:ResultSet
+			while(rs.next()) {
+				int num = rs.getInt("num");
+				/*getInt
+					int getInt(String columnLabel)
+						throws SQLException
+					Retrieves the value of the designated column in the current row of this ResultSet object as an int in the Java programming language.
+				*/
+				String title = rs.getString("title");
+				/*getString
+					String getString(String columnLabel)
+						throws SQLException
+					Retrieves the value of the designated column in the current row of this ResultSet object as a String in the Java programming language.
+				*/
+				String company = rs.getString("company");
+				String name = rs.getString("name");
+				int cost = rs.getInt("cost");
+				
+				BookDTO dto = new BookDTO(num, title, company, name, cost);
+				list.add(dto);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("selectBookAll() Exception!!!");
+		}
+		return list;
+	} // selectBookAll()

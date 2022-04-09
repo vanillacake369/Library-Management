@@ -1,0 +1,18 @@
+BookInput.void bookUpdateInput()설명
+
+1. 안내문 / 수정도서번호 입력 안내문 print
+2. Scanner.nextLine() -> Integer.parseInt 로 수정도서번호 입력
++) 아마 \n을 제외한 분리자토큰까지 읽기위해 nextLine()을 쓴 것으로 추정
+3. BookDAO객체 생성
+4. BookDAO.checkNum(num) 
+num에 해당하는 row의 ResultSet값을 저장
+5. ResultSet값이 존재하지 않는다면 안내문 print
+6. 존재한다면 scanner를 통해 정보 입력(title/company/name/cost)
+7. BookDTO객체를 통해 num+새로운 정보인 도서 생성
+8. updateBook(dto) -> succ
+	**updateBook()내부에 ps.executeQuery 존재할텐데 이것의 반환값이 int, row count for DML statement이다.
+9. succ이 0 이상 :: 성공했다면 
+수정되었음의 안내문 print
+10. 	0 미만 :: 실패했다면
+수정실패 안내문 print
+

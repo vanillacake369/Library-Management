@@ -1,0 +1,20 @@
+void bookSearchTitleInput()
+도서제목검색 : scanner를 통해 title 검색 시 title있는 도서 print
+
+1. 안내문 print
+2. scanner.nextLine()을 통해
+-> nextLine()?
+next,nextInt : 분리자 제외한 토큰 읽어오기 
+nextLine : 분리자 포함한 토큰 읽어오기 
+따라서 버퍼 내부에 분리자가 남아있는데 nextLine을 쓴다면 이 분리자 토큰을 읽어오게 되므로 주의해야한다.
+-> 굳~이 nextLine()?
+가령, "내 이름은 뽀삐"라는 책을 검색하려 했을 경우에는 next()를 사용 시 분리자로 끊어 읽는 특성으로 인해
+"내" "이름은" "뽀삐" 로 구분지어 토큰을 읽겠지만 nextLine()인 경우 개행문자를 기준으로 읽으므로 "내 이름은 뽀삐"
+그대로 읽게 되어 sql query 목적에 더 적합하다.
+3. BookDAO객체 생성
+4. BookDAO.selectBookTitle(list, searchTitle)
+	a) 중간에 searchTitle이 있는 title의 레코드들 선택
+	b) 선택된 레코드들의 num/title/company/name/cost를 DTO에 저장
+	c) 각각 저장된 DTO들을 list에 add
+5. BookDAO.display(list)
+	

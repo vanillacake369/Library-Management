@@ -1,0 +1,278 @@
+09_13 공부 로그
+1. ServerSocket.accept() 와 SeverSocket.bind()는 무슨 차이이지?
+/* 소켓 이해하기
+데이터를 읽고 쓸때 대상이 파일이라면 일반적으로 파일포인터를 사용하였다.
+
+하지만 TPC/IP에서는 데이터를 주고 받는 대상이 원격의 컴퓨터 이므로 그 대상이 원격의 컴퓨터이다.
+
+그러한 기능을 가능하게 해주는 장치가 바로 소켓이라고 한다.
+
+책에서는 이 소켓을 전화기에 비유를 했다.
+
+일단 함수의 세부 설명은 뒤에서 하겠지만 일단 전화기에 비유해서 소켓 함수를 소개하자면 아래와 같다.
+
+
+-----------------   소켓을 생성하는 함수 (전화기 설치) ----------------------
+int socket(int domain, int type, int protocol);
+--------------------------------------------------------------------
+
+
+------------------ 소켓에 주소를 할당 함수(전화기에 전화번호 부여) -------------------------
+int bind(int sockfd, struct sockaddr *myaddr, int addrlen);
+-------------------------------------------------------------------------------------
+
+
+----------------- 소켓 열기 함수 (전화기를 케이블에 연결) -----------------
+int listen(int sockfd, int backlog);
+--------------------------------------------------------------------
+
+
+----------------- 소켓 연결 허용 함수 (전화를 받는 다...) -----------------
+int accept(int sockfd, struct sockaddr *addr, int *addrlen);
+--------------------------------------------------------------------
+
+
+----------------- 소켓을 다른 서버에 연결하는 함수 (전화를 건다) ------------------
+int connect(int sockfd, struct sockaddr *serv_addr, int addrlen);
+*/
+/* 함수 정리 https://www.blog.naver.com/nswve/22186686590
+	
+데이터를 읽고 쓸때 대상이 파일이라면 일반적으로 파일포인터를 사용하였다.
+
+하지만 TPC/IP에서는 데이터를 주고 받는 대상이 원격의 컴퓨터 이므로 그 대상이 원격의 컴퓨터이다.
+
+그러한 기능을 가능하게 해주는 장치가 바로 소켓이라고 한다.
+
+책에서는 이 소켓을 전화기에 비유를 했다.
+
+일단 함수의 세부 설명은 뒤에서 하겠지만 일단 전화기에 비유해서 소켓 함수를 소개하자면 아래와 같다.
+
+
+-----------------   소켓을 생성하는 함수 (전화기 설치) ----------------------
+int socket(int domain, int type, int protocol);
+--------------------------------------------------------------------
+
+
+------------------ 소켓에 주소를 할당 함수(전화기에 전화번호 부여) -------------------------
+int bind(int sockfd, struct sockaddr *myaddr, int addrlen);
+-------------------------------------------------------------------------------------
+
+
+----------------- 소켓 열기 함수 (전화기를 케이블에 연결) -----------------
+int listen(int sockfd, int backlog);
+--------------------------------------------------------------------
+
+
+----------------- 소켓 연결 허용 함수 (전화를 받는 다...) -----------------
+int accept(int sockfd, struct sockaddr *addr, int *addrlen);
+--------------------------------------------------------------------
+
+
+----------------- 소켓을 다른 서버에 연결하는 함수 (전화를 건다) ------------------
+int connect(int sockfd, struct sockaddr *serv_addr, int addrlen);
+[출처] [1장] 소켓이해하기 (리눅스버전) , socket , bind , listen , accept , 파일조작하기(리눅스), 파일디스크립터|작성자 아슈크림
+
+
+*/
+/* 함수정리
+	Bind(int sockfd, struct sockaddr *myaddr, socklen_t addrlen);
+
+소켓을 생성했으니, 이제 각 소켓에 IP주소와 포트를 할당해줘야한다.
+
+이를 bind함수로 한다. 클라이언트는 연결할 인터넷 서비스 포트번호만 알면 되기 때문에
+
+bind함수가 따로 필요하지 않다. 
+
+​
+
+bind함수의 매개변수는 첫번째로 듣기 소켓이며, 두번째 매개변수는 sockaddr_in 구조체이다.
+
+이 구조체를 이용하여 IP 주소와 포트 번호등을 지정할 수 있다.
+
+​
+
+구조체 멤버변수로 
+
+- sin_family : 주소 체계 AF_INET
+
+- sin_addr : 연결할 인터넷 주소를 지정하는데 사용된다. 서버 프로그램은 기다리기에 INADDR_ANY로 쓴다.
+
+- sin_port : 서버는 기다리는 포트, 클라이언트는 연결할 서버의 포트 번호이다. 
+
+​
+
+bind함수에서 sockaddr의 구조체가 2개 있는데, 소켓함수들은 소켓의 유형에 관계없이 sockaddr만 받아들인다.
+
+이때 구조체 내부를 보면 sa_family 와 sin_family가 있는데 완전히 다른 소켓 유형을 받아들여도
+
+이 두개의 값만 비교하여 어떤 소켓 구조인지 알 수 있다. 
+
+(이 부분에 대해서는 뭔소린지 잘 모르겠다. 결국 다른 유형의 소켓들을 받아도 sa_family 값만 비교하면 어떤 소켓인지
+
+알 수 있다는 말인 것 같다. 데이터를 파라미터 매개변수로 제공할 때, 데이터 유형을 알려주는 키 값을 함께 제공하는 
+
+범용함수를 만드는 방법으로 어떤 유형인지 몰라도 다 가능하게 한다?)
+
+​
+
+listen(int s, int backlog);
+
+여러 클라이언트 요청을 대기시킬 수신 대기열 listen함수에 대해 알아보자.
+
+먼저한 요청이 제일 먼저 처리되어야 하기 때문에 FIFO 형태로 만든다.
+
+listen 함수의 매개변수로, 소켓 함수를 수행한 결과를 얻은 듣기 소켓 지정번호
+
+두번째 매개변수로 대기열의 크기다. 실행결과 성공은 0, 실패는 -1을 반환한다.
+
+​
+
+accept(int s, struct sockaddr *addr, socklen_t *addrlen);
+
+수신 대기열에 있는 클라이언트의 연결 요청을 확인하면 된다.
+
+FIFO로 만들어진 listen함수의 값을 하나 가져와서 통신을 위한 연결 소켓을 생성한다.
+
+매개변수를 한번 보자. 
+
+- sockfd : 클라이언트 연결 요청을 받아들이는 듣기 소켓
+
+- addr : 클라이언트의 주소와 포트정보를 구조체에 복사하여 넘겨준다. 정보확인, 로그 저장 목적이다.
+
+- addrlen : sockfd 구조체의 크기.
+
+​
+
+accept함수가 성공하면, 0보다 큰 값이었던 소켓 지정번호를 반환한다.
+
+이때 연결소켓과 듣기 소켓의 차이를 알아가야한다. 듣기 소켓은 단순히 연결 요청을 듣는 소켓이며
+
+연결소켓은 클라이언트와의 통신을 수행한다. 이렇게 2개로 나눠져있는 이유는,
+
+클라이언트와 통신중에 연결 요청이 들어올 수 있기 때문이다.
+
+​
+
+connect(int sockfd, const struct sockaddr *serv_addr, socklen_t addrlen);
+
+클라이언트는 connect 함수를 통해 서버에 연결 요청을 한다.
+
+connect에 필요한 건 sockfd, 소켓 지정 번호와 serv_addr, 서버의 ip주소 포트 정보등이다.
+
+​
+
+read(int fd, void *buff, size_t nbytes)
+
+/write(inf fd, const void *buf, size_t nbytes);으로 데이터 읽고 쓰기
+
+클라이언트 Connect -> 서버 list -> accept 를 통해 연결되어 통신할 수 있게 된다.
+
+그 후 하는 일은 read, write만 사용하면 되지만, 운영체제에서 사용되는 함수인지
+
+소켓에서 제공하는 함수인지에 따라 '저수준 입출력 함수', '소켓 입출력 함수'로 나뉜다.
+
+read 함수의 경우 소켓에서 count 크기만큼 데이터를 읽어 buff에 저장하는 일을 한다.
+
+​
+
+read 함수의 매개변수로 
+
+- fd : 열린 파일의 지정 번호. 여기서 fd는 소켓 지정번호다. 
+
+- buff : 읽어들인 데이터가 저장될 버퍼 변수
+
+- count : 데이터의 count 크기
+
+​
+
+* memset 함수 
+
+: 메모리의 시작점부터 연속된 범위를 특정값으로 지정하고 싶을때 사용된다.
+
+void *memset(void *ptr, int value, size_t num);
+
+ptr : 메모리 시작 포인터, value : 채우는 값,  num : 채우려는 메모리 크기
+
+​
+
+write 함수의 매개변수로
+
+read 함수 매개변수랑 똑같은데 단지 데이터가 저장되어 있는 값, 보낼 데이터이다.
+
+​
+
+close(int fd) 함수
+
+메모리를 풀어주는 것 처럼 소켓을 종료시켜줘야한다. 
+
+매개변수로  - sockfd 소켓 지정 번호 
+
+​
+[출처] TCP/IP 정리 :: bind,accept,listen,connect,r/w,close 함수|작성자 미니멀공대생
+*/
+/* java.docs 참조
+public Socket accept()
+              throws IOException
+	Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+	A new Socket s is created and, if there is a security manager, the security manager's checkAccept method is called with s.getInetAddress().getHostAddress() and s.getPort() as its arguments to ensure the operation is allowed. This could result in a SecurityException.
+
+	Returns:
+	the new Socket
+	Throws:
+	IOException - if an I/O error occurs when waiting for a connection.
+	SecurityException - if a security manager exists and its checkAccept method doesn't allow the operation.
+	SocketTimeoutException - if a timeout was previously set with setSoTimeout and the timeout has been reached.
+	IllegalBlockingModeException - if this socket has an associated channel, the channel is in non-blocking mode, and there is no connection ready to be accepted
+	See Also:
+	SecurityManager.checkAccept(java.lang.String, int)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+public void bind(SocketAddress endpoint,
+        int backlog)
+          throws IOException
+	Binds the ServerSocket to a specific address (IP address and port number).
+	If the address is null, then the system will pick up an ephemeral port and a valid local address to bind the socket.
+
+	The backlog argument is the requested maximum number of pending connections on the socket. Its exact semantics are implementation specific. In particular, an implementation may impose a maximum length or may choose to ignore the parameter altogther. The value provided should be greater than 0. If it is less than or equal to 0, then an implementation specific default will be used.
+
+	Parameters:
+	endpoint - The IP address & port number to bind to.
+	backlog - requested maximum length of the queue of incoming connections.
+	Throws:
+	IOException - if the bind operation fails, or if the socket is already bound.
+	SecurityException - if a SecurityManager is present and its checkListen method doesn't allow the operation.
+	IllegalArgumentException - if endpoint is a SocketAddress subclass not supported by this socket
+	Since:
+	1.4
+*/
+/* 소켓 프로그래밍 하는 방법
+https://recipes4dev.tistory.com/153
+*/
+
+	-1. Client_usingThread_ChattProgram.java 소스코드에서 
+	Socket Cs; CS.connect(new InetSocketAddress(InetAddress.getLocalHost(), 4040)); 의미
+
+	-2. Server_usingThread_ChattProgram.java소스코드에서 
+	ServerSocket MSS; MSS.bind(new InetSocketAddress(InetAddress.getLocalHost(), 4040)); 의미
+
+	-3. 아니 그렇다면 그저 accept()만을 하는 소스코드들과 bind,connect()를 하는 소스코드들이 있는데 
+	왜 그런거지? 아니 그러니까 왜 accept()만을 하는 소스코드들이 있는거지? 가능은 한건가? 
+		1. socket을 만들고 
+		2. 소켓번호와 소켓주소를 bind하고 
+		3. 클라이언트로부터 연결을 listen
+		4. 클라이언트에서 connect()
+		5. 서버에서 accept()
+		6. close()를 통해 소켓 종료
+		
+
+2. 아직 공부가 부족한 부분 :: Thread에 대한 확실한 공부 / 입출력Stream을 어떤 걸 어떻게 쓰는지에 대한 감
+
+3. 1:N통신에서 N개의 스레드를 형성하는 게 아니라면 어떻게 하는 것이란 말인가?
+극단적으로 예를 들어볼게요.
+하나의 스레드에서 read를 사용하고 있다고 상상해보세요. 
+select, epoll 이벤트처리기를 사용하지 않으면 1스레드당 1read밖에 처리할수없죠.
+tcp socket당 하나의 스레드를 생성할것인가요? 연결수가 적으면 문제가없지만 1000개면? 1만개, 10만개
+//그런 의미로서는 내가 가지고 있는 소스코드 예제들은 다 틀렸다.
+
+
+
+   

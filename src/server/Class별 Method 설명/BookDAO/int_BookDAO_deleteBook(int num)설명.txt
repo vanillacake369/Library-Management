@@ -1,0 +1,20 @@
+BookDAO - public int deleteBook(int num) 설명
+**PreparedStatement객체의 int executeUpdate() throws SQLException
+Returns:
+either (1) "the row count" for SQL Data Manipulation Language (DML) statements 
+or (2) "0" for SQL statements that return nothing
+Throws:
+
+1. succ : row count for DML
+2. delete문 해석 
+	String sql = "DELETE FROM tblBook WHERE num = ?";
+	tblBook테이블에서 num=?인 row 삭제
+		cf) delete : erase row(data) only 
+		/ truncate : size--,index--,table은 그대로 	
+		/ drop : erase all, table 날라감
+3. conn.preparestatment을 통해 sql문 삽입하여 ps에 넘김
+4. ps.setInt(index,int)를 통해 첫인덱스토큰인 ?에 num인 int지정
+5. ps.executeUpdate()를 통해 sql문 수행
+6. 수행반환값인 row_count(int)값을 succ변수에 대입
+7. return succ
+

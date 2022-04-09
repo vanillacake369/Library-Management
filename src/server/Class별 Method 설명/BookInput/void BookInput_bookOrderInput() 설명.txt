@@ -1,0 +1,11 @@
+void BookInput_bookOrderInput() 설명
+1. 도서주문안내문 / 주문도서번호 입력 안내문 print
+2. scanner.nextLine -> Integer.parseInt 를 통해 num입력받기
+3. BookDAO객체 생성
+4. num에 해당하는 row조회 :: dao.checkNum(num) -> rs
+5. 조회 시 없다면 안내문 print
+6. 있다면 주문도서수량 입력안내문 print
+7. scanner.nextLine -> Integer.parseInt 를 통해 cnt(count)입력받기
+8. BookDAO.orderBook(rs, cnt)
+9. // 주문영수증 안내문 print
+	이건 코더가 있어도 그만 없어도 그만이라고 생각해서 주석처리 해놓은 것 같다.

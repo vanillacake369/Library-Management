@@ -1,0 +1,9 @@
+DTO vs DAO
+
+DAO is a class that usually has the CRUD(create,read,update,delete) operations like save, update, delete.
+statement ~~~ DAO
+DTO is just an object that holds data. It is JavaBean with instance variables and setter and getters.
+metadata ~~~ DTO
+The DTO is used to expose several values in a bean like fashion. 
+This provides a light-weight mechanism to transfer values over a network or between different application tiers.
+DTO will be passed as value object to DAO layer and DAO layer will use this object to persist data using its CRUD operation methods.

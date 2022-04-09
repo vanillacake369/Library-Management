@@ -1,0 +1,63 @@
+JDBC 란 자바에서 제공하는 데이터베이스와 연결하여 데이터를 주고 받을 수 있도록 하는 인터페이스입니다.
+JDBC를 사용하는 방법은 어떤 데이터베이스를 사용하던지 같습니다. 방법은 간략하게 다음과 같습니다. 
+	1. Class.forName() 을 이용해서 드라이버 로드
+	2. DriverManager.getConnection() 으로 연결 얻기
+	3. Connection 인스턴스를 이용해서 Statement 객체 생성
+	4. Statement 객체의 결과를 ResultSet 이나 int에 받기
+	
+Class.forName("oracle.jdbc.driver.OracleDriver");
+/*	마리아디비의 JDBC드라이버인 "oracle.jdbc.driver.OracleDriver"클래스 위치를 넘겨주어 
+	드라이버 인스턴스 생성하여 DriverManager에 등록
+	클래스로더 라는 녀석을 통해서 해당 데이터베이스 드라이버를 로드할 뿐 데이터베이스와의 연결에 관해서는 아무런 동작도 하지 않는다고 합니다.
+	JDBC드라이버의 클래스 이름은 사용하는 DBMS에 따라 다를 수 있다. (위와 같이 마리아디비인 경우 oracle.jdbc.driver.OracleDriver")
+	만일 로드 중 JDBC드라이버 없으면 ClassNotFoundException이 발생.
+	
+	It registers the driver; something of the form:
+
+		public class SomeDriver implements Driver {
+		  static {
+			try {
+			  DriverManager.registerDriver(new SomeDriver());
+			} catch (SQLException e) {
+			  // TODO Auto-generated catch block
+			}
+		  }
+
+		  //etc: implemented methods
+}
+ */
+conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
+/*	DriverManager클래스는 JDBC드라이버매니저 역할. 자바응용프로그램을 JDBC드라이버에 연결시켜주는 클래스.
+	The getConnection(String url) method of Java DriverManager class attempts to establish a connection to the database by using the given database URL. 
+	The appropriate driver from the set of registered JDBC drivers is selected.
+
+	Syntax
+	public static Connection getConnection(String url) throws SQLException  
+	Parameters
+	url - a database url of the form jdbc:subprotocol:subname
+	Returns
+	This method returns connections to the URL.
+	Exception
+	SQLException will be thrown, if database access occurs or url is null.
+	SQLTimeoutException will be thrown, when the timeout value specified by the setLoginTimeout method has been exceeded and tried to cancel the current database connection attempt.
+	
+	url매개변수는 다음과 같은 문법을 가진다.
+	jdbc:subprotocol:subname
+	여기서 subprotocol은 oracle:thin이다. (JDBC Thin Driver. The JDBC Thin driver is a pure Java, Type IV driver that can be used in applications and applets.)
+	localhost : 오라클이 설치된 IP 의 경우 url은 다음과 같다.(즉, default값은 다음과 같다)
+	url = "jdbc:oracle:thin:@localhost:1521:orcl";
+	1521 은 오라클 데이터베이스의 서버 포트이다. orcl 은 오라클에 만들어 놓은 데이터베이스 이름이다.
+	
+	Connection 의 연결이 성공적으로 이루어지면 해당 Connection 객체를 취득하나 , 만일 오류가 있을 경우 null을 return 하게 된다.
+	또한 취득한 connection은 사용을 다 한 후 close 해 주어야 한다. 이는 나중에 Connection Pool 이라는 방법을 사용할 경우 더욱 중요한 의미를 갖게 된다.  
+	시간이 지나면 (connection 이 열리고 한동안 사용되지 않으면) 자동으로 close 가 된다고 그냥 넘어 가지 말도록 해야 한다.
+*/
+stmt = conn.createStatement();
+String sql = "select * from tablename";
+rs = stmt.executeQuery(sql);
+/*
+Statement	 conn.createStatement()
+		:: Creates a SQLServerStatement object for sending SQL statements to the database.
+int 		stme.executeQuery(String sql)
+		:: Executes the given SQL statement, which returns a single ResultSet object.
+*/

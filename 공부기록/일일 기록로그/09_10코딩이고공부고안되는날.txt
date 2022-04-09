@@ -1,0 +1,4 @@
+1. 여지껏 Runnable 인터페이스를 사용해서 Thread생성 하는 걸 못 봄.
+2. 자. Thread를 연결해야하는 건 알겠어. 근데 run()내부에 무엇을 구현하는 거지?
+3. DataInputStream? socket.getInputStream() -> new DataInputStream() ??
+DataInputStream / DataOutputStream :: handles primitive(byte data)

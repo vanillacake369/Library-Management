@@ -1,0 +1,38 @@
+0. 일반 statement.executeUpdate()메소드 사용방법
+
+1. 보안상의 이유로 statement객체 지양
+	- 왜죠
+		쿼리 문장 분석-컴파일-실행 순으로 진행 될 때, 사용자 입력에 따른 쿼리문의 형태가 바뀔 수 있어 사용자 정보가 노출되는 등의 보안에 취약
+		동일문장임에도 입력값에 따라 분석-컴파일-실행 모두를 다 해야하므로 캐시의 부하가 늘어난다.
+	
+	- PreaparedStatement사용방법?
+		PreparedStatement 은 이름에서부터 알 수 있듯이 준비된 Statement 이다. 
+		이 준비는 컴파일(Parsing) 을 이야기하며, 컴파일이 미리 되어있는 녀석이기에 Statement 에 비해 성능상 이점이 있다. 
+		요 녀석은 보통 조건절과 함께 사용되며 재사용이 되는데, ? 부분에만 변화를 주어 지속적으로 SQL을 수행하기 때문에 한눈에 무슨 SQL 문인지 파악하기는 어렵다.
+			#Ex)
+			String sqlstr = "SELECT name, memo FROM TABLE WHERE num = ? " 
+			PreparedStatement stmt = conn.prepareStatement(sqlstr); 
+			pstmt.setInt(1, num);
+			ResultSet rst = pstmt.executeQuerey(); 
+			
+2. 도서관리 DB 테이블 내에 create,update,delete시행하려면 root로 접속해야하는 것 아닌가
+	강력한 리눅스 서버 보안 방법 중의 하나인 리눅스 서버 root 사용 중지로 서버 root 로그인 시도를 원천적으로 막음으로서 서버 보안 강화 및 서버 최적화 방법에 대해서 살펴보겠습니다.
+
+	대부분 서버의 가장 강력한 권한을 갖는 사용자는 Super User라고 할 수 있는 root 입니다. root만 장악하면 서버 전반을 좌지우지할 수 있기 때문에 해커의 중요한 타겟이 됩니다.
+
+	여기에 이 Super user 사용자 이름은 root로 만천하에 알려져 있기 때문에 강력한 컴퓨팅에 의한 스크립트 실행으로 다양한 비밀번호를 대입해 보면서 강제적인 roor 로그인을 시도할 수 있습니다.
+
+	그렇기 때문에 여기서는 우분투를 비롯한 리눅스 서버에서 roor를 사용하지 않고 서버를 운영하는 방법에 대해서 살펴보도록 하겠습니다.
+
+	[출처 : https://happist.com/573810/%EB%A6%AC%EB%88%85%EC%8A%A4-%EC%84%9C%EB%B2%84-root-%EC%82%AC%EC%9A%A9-%EC%A4%91%EC%A7%80%EB%A1%9C-%EB%A6%AC%EB%88%85%EC%8A%A4-%EC%84%9C%EB%B2%84-%EB%B3%B4%EC%95%88-%EA%B0%95%ED%99%94%ED%95%98]
+	
+3. ClassNotFoundException 처리 이유
+	데이터베이스 드라이버 클래스 연결 예외발생 처리
+	
+4. SQLException 처리 이유
+	SQL명령문 예외발생처리
+
+5. Scanner객체 close()안 하는 이유?
+	.close()의 기능은 Scanner가 참조하고 있는 스트림을 닫는 기능 이다. 즉, System.in 스트림을 닫는 것이다.
+	문제점은 한번 닫은 System.in 스트림을 다시 열 수 없다는 것이다.
+	

@@ -1,0 +1,132 @@
+<포트 번호 설명>
+
+0번 ~ 1023번 : 까지는 예약된(잘알려진) 포트 입니다. 
+
+   .FTP,HTTP,TELNET 등 이 있습니다.
+
+1024번 ~ 49151번: 등록된 포트 (registered port)
+
+49152번 ~ 65535번: 동적 포트 (dynamic port)
+
+ 
+
+0번 부터 1023까지만 임의로 사용하지 않으면 문제는 없는것 같습니다.
+
+
+=======================================================================================================
+
+
+ServerSocket은 어떤 Exception이 발생하는가? 
+	public ServerSocket(int port) throws IOException 
+	Parameters 
+		A port number, or 0 for any available port. 
+	Throws 
+		IOException 
+		If any kind of I/O error occurs. 
+	SecurityException 
+		If the application is not allowed to listen on the given port. 
+임의의 포트번호를 넣어도 되는 것인가? 5555이거나 9999이거나 아무 상관이 없는가?
+	It is up to you to specify the listening port for your server side application 
+	because the client side has to know to which port it should try connecting to.
+	As ports range 1-1024 is reserved for system services (this is just by convention, not a rule) you can pick any port from (1024, 65535]. 
+	If the port you have selected is occupied by another application, it will just throw an exception. 
+	If you do not specify the port number, it will be randomly generated.
+
+요청대기하는 동안 프로그램은 대기상태인가? 즉, 요청이 들어오기 전까지는 아래 line부터는 실행이 멈춰있는가?
+	public Socket accept() 	
+		throws IOException
+	Listens for a connection to be made to this socket and accepts it. 
+	The method blocks until a connection is made.
+	A new Socket s is created and, if there is a security manager, 
+	the security manager's checkAccept method is called with s.getInetAddress().getHostAddress() and s.getPort() 	
+	as its arguments to ensure the operation is allowed. 
+	This could result in a SecurityException.
+
+====================================================================================================
+
+Socket s;
+s.get~~	-> ~~stream  -> ~~writer/~~reader
+e.g.)#1
+br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+e.g.)#2
+BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
+e.g.)#3
+PrintWriter pw=new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
+
+1. get InputStream/OutputStream of socket object
+2. wrap with InputStream/InputStreamReader/OutputStream/OutputStreamWriter
+	-> InputStreamReader constructor's parameter
+	public InputStreamReader(InputStream in)
+	-> OutputStreamWriter constructor's parameter
+
+OutputStream
+	OutputStream is a stream where you can work on for outputting data to any destination. 
+	It has basic functionality and allows only writing bytes to the stream.
+PrintWriter and OutputStreamWriter
+	PrintWriter and OutputStreamWriter are helper that let you act on top of an OutputStream. 
+	For instance the PrintWriter lets you write directly Strings to the OutputStream so that you don't have to take care of writing the bytes.
+
+An Outputstream is an output stream of bytes.
+For example you can output it to your stdout (the static variable System.out returns an Outputstream that points to stdout). 
+The OutputstreamWriter is a wrapper around the Outputstream specifically for character streams encoded in a certain encoding, 
+such as utf-8. It provides utility methods for writing Strings or characters to the output
+
+====================================================================================================
+
+s.getOutputStream() -> OutputStreamWriter객체 -> PrintWriter객체
+				
+- s.getOutputStream() : 수신받은 Socket객체의 출력스트림을 받아오기
+OutputStream	getOutputStream()
+Returns an output stream for this socket.
+- OutputStreamWriter() : 문자데이터를 바이트스트림으로 읽어온다.
+OutputStreamWriter is a class which is used to convert character stream to byte stream, the characters are encoded into byte using a specified charset.
+	
+- PrintWriter(OutputStream out)
+-> 자동플러시 없이 OutputStream객체로 PrintWreter객체를 생성한다. 
+-> PrintWriter
+:enables you to write formatted data to an underlying Writer
+PrintWriter is useful if you are generating reports (or similar) where you have to mix text and numbers.			
+			
+- OutputStreamWriter
+:바이트 기반 출력스트림 최상위 클래스
+최상위이므로 바이트출력스트림 관련 모든 클래스 커버가능
+
+
+====================================================================================================
+
+Server Side에서 연결된 후
+System.out.println 호출 시, 어디에 출력되지?
+
+-> 서버 콘솔에 출력되네!
+
+====================================================================================================
+
+"java.net.ConnectException: Connection refused: connect"
+This exception means that there is no service listening on the IP/port you are trying to connect to:
+
+You are trying to connect to the wrong IP/Host or port.
+You have not started your server.
+Your server is not listening for connections.
+On Windows servers, the listen backlog queue is full.
+
+7999번 포트를 DESKTOP-QTI9HOB:0에서 이미 쓰고 있다라...
+ -> javaw.exe
+ 컴파일버튼을 눌러서 run을 눌러 exe를 만들었잖아
+ 그러니까 7999번 포트는 너가 만든 exe가 잡아먹고 있다는 거지
+ 풀려면 간단함
+ 강제종료를 통해 exe를 멈추면
+ 포트를 소유하는 것도 끝남
+
+
+
+
+
+
+
+
+
+
+
+
+
+.

@@ -1,0 +1,50 @@
+// 제목 검색 메서드
+	public void selectBookTitle(ArrayList<BookDTO> list, String searchTitle) {
+		String sql = "SELECT * FROM tblBook WHERE UPPER(title) LIKE UPPER(?)";
+		/*
+		sql : 질의문
+		UPPER function converts all letters in the specified string to uppercase.
+		*/
+		try {
+			ps = conn.prepareStatement(sql);
+			/*
+			connection.prepareStatement()
+			PreparedStatement prepareStatement(String sql)
+                                   throws SQLException
+			Creates a PreparedStatement object for sending parameterized SQL statements to the database.
+			*/
+			
+			ps.setString(1, "%" + searchTitle + "%");
+			/*
+			1 : 첫번째 토큰?의 인덱스 
+			"%" : any value
+			-> ~ searchTitle ~ : 중간에 searchTitle이 들어간 레코드
+				cf._ : blank   Ex) 6_ : 6123124,6-12523,6andkd ...
+			*/
+			rs = ps.executeQuery();
+			/*
+			prepareStatement의 질의를 executeQuery의 결과인 ResultSet객체 도출
+			*/
+			while(rs.next()) {
+			//만약 질의한 내용(ResultSet)의 레코드들의 다음행이 존재한다면 반복
+				int num = rs.getInt("num");
+				String title = rs.getString("title");
+				String company = rs.getString("company");
+				String name = rs.getString("name");
+				int cost = rs.getInt("cost");
+				/*
+					ResultSet객체를 통해 
+					각각의 num/title/company/name/cost 레코드들의 값을 
+					각각의 알맞은 타입에 저장
+				*/
+				
+				BookDTO dto = new BookDTO(num, title, company, name, cost);
+				//	내용들을 DTO객체에 저장
+				list.add(dto);
+				//	add DTO객체 to ArrayList<BookDTO>
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("selectBookTitle() Exception!!!");
+		}
+	} // selectBookTitle()

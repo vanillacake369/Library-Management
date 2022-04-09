@@ -1,0 +1,35 @@
+09_12 공부기록 로그
+
+1. ClientSide에서 socket = new Socket("192.168.0.47", 15000); 에서의 인자값의 의미는?
+
+The 192.168. 0.47 IP address is a local, private, or gateway IP address. 
+192.168. 0.47 is your router's address that computer devices connected to the network will use to send data requests over the internet.
+	"https://router-network.com/ip/192-168-0-47#:~:text=The%20192.168.,data%20requests%20over%20the%20internet."
+		
+-> What is the difference between 127.0.0.1 and 192.168.x.y in terms of computer networking?	
+In a little more laymen’s terms: 127.0.0.1 is your computer. If you ping it - you're pinging yourself, if you try to explore files on it, you're exploring files on your computer. This address is created to test your computer’s networking protocols without actually using the network your computer is connected to. It is called a loopback address - you can think of it as a cable that leaves your computer and loops around to plug back into your computer, rather than being plugged into the network. Your computer cannot and will not communicate with any devices other than itself using this address.
+Your 192.168.x.x address is the network created by your router where all of your networked devices communicate. Here you can also see and communicate with your own computer by referencing the address it has been assigned, but you can also communicate with any other device on that network.
+ +) 127.0.0.1 is loop back IP. Where 192.168.x.y is Class C IP reserved for private Networks	 
+	"https://www.quora.com/What-is-the-difference-between-127-0-0-1-and-192-168-x-y-in-terms-of-computer-networking"
+				
+To learn more about 192.168.x.x. 
+GO TO
+	"https://www.quora.com/Why-do-almost-all-IP-addresses-start-with-192-168"
+
+2. 왜 Thread 형성할 때 Runnable interface 대신에 그냥 extends Thread로 퉁쳐버리지? Socket Class 정의 시 다중상속의 필요성이 없어서 그런가?
+"Case by Case,Coder by Coder."
+-> 추측컨대 Thread를 이용한 Server 및 Client 클래스 정의 시에는 다중상속을 해야할 필요가 없으므로 그냥 extension을 통해 thread 구현하는 것 같음
+
+3. 어떤 Stream을 사용할 것이냐
+Client에 따라 입출력data type, 즉 받고 보내는 자료의 형식이 달라야하므로 
+전체를 포괄하는 stream클래스를 쓰고
+형변환이나 메서드를 통해 (e.g. readUTF()) 데이터를 클라이언트에 맞게끔 변환하게 만들자.
+ 
+4. Server-Client 간 Process가 어떻게 되나?
+	0. Client :: 내부에서 Scanner를 통해 질의할 내용 키보드로 입력
+	1. Client -> Server :: Scanner로 입력받은 값 그대로 Server에 넘김
+	2. Server :: 받아온 질의내용 MariaDB에 질의
+	3. Server :: QueryReturn type인 ResultSet에서 getInt()/getString()을 통해 형변환하기
+	4. Server -> Client :: 형변환을 통해 바뀐 값 Client에 전송
+	5. Client :: Print 
+

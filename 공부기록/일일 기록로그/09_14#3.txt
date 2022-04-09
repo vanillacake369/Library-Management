@@ -1,0 +1,80 @@
+파일 전송 예제
+TcpFileServer.java
+서버는 클라이언트가 접속하면 서버 컴퓨터의 D:/D_Other 폴더에 있는 Tulips.jpg 파일을 클라이언트로 전송한다.
+public class TcpFileServer {
+
+private ServerSocket server;
+private Socket socket;
+private FileInputStream fis;
+private OutputStream out;
+
+  // 1. 서버 시작
+  public void serverStart() {
+    File file = new File("d:/D_Other/Tulips.jpg");
+
+    try {
+      server = new ServerSocket(7777);
+      System.out.println("서버 준비 완료...");
+
+      socket = server.accept();
+      System.out.println("파일 전송 시작...");
+
+      fis = new FileInputStream(file);
+      out = socket.getOutputStream(); // 문자열이 아닌 바이너리 데이터를 보내기 위해 DataOutputStream 안씀
+
+      byte[] tmp = new byte[1024]; // 버퍼기능
+      int c = 0;
+      while((c = fis.read(tmp)) != -1) {
+        out.write(tmp, 0, c);
+      }
+      out.flush();
+      System.out.println("파일 전송 완료...");
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if(fis != null) {
+        try {fis.close();} catch (IOException e) {}
+      }
+      if(out != null) {
+        try {out.close();} catch (IOException e) {}
+      }
+      if(socket != null) {
+        try {socket.close();} catch (IOException e) {}
+      }
+      if(server != null) {
+        try {server.close();} catch (IOException e) {}
+      }
+    }
+  }
+  public static void main(String[] args) {
+    new TcpFileServer().serverStart();
+  }
+TcpFileClient.java
+클라이언트는 서버에 접속하여 서버가 보내주는 파일을 D:/C_Lib폴더에 저장한다.
+public class TcpFileClient {
+  public void clientStart() {
+    File file = new File("d:/C_Lib/Tulips.jpg"); // 저장할 파일 설정
+
+    try(Socket socket = new Socket("localhost", 7777);
+      InputStream is = socket.getInputStream();
+      FileOutputStream fos = new FileOutputStream(file); ) {
+      // close 필요한 객체들을 try 안에서 생성하면 finally 영역에서 자동으로 close해줌
+      // (JDK 1.7 이상, try-with-resource)
+
+      System.out.println("파일 다운로드 시작...");
+      byte[] tmp = new byte[1024];
+      int length = 0;
+      while ((length = is.read(tmp)) != -1) {
+        fos.write(tmp, 0, length);
+      }
+      fos.flush();
+      System.out.println("파일 다운로드 완료...");
+    } catch (IOException e) {
+      e.printStackTrace();
+    } 
+  }
+
+  public static void main(String[] args) {
+    new TcpFileClient().clientStart();
+  }
+}

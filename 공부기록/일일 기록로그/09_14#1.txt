@@ -1,0 +1,105 @@
+스레드 이용 예제1 : 1:1 채팅
+ServerSocket과 Socket은 동기(블로킹)방식
+서버를 실행하는 main 스레드가 직접 입출력 작업을 담당하게 되면 입출력이 완료될 때까지 다른 작업을 할 수 없는 상태가 됨
+문제점1: 서버 애플리케이션은 지속적으로 클라이언트의 연결 수락 기능을 수행해야하지만 입출력에서 블로킹되면 이 작업을 할 수 없게 됨
+문제점2: 클라이언트 1과 입출력하는 동안에는 클라이언트2와 입출력을 할수없음
+★ accept(), connect(), read(), write() 는 별도의 작업 스레드를 생성해서 병렬적으로 처리하는 것이 좋음
+스레드풀: 클라이언트의 폭증으로 인해 서버의 과도한 스레드 방지 (p.1067)
+
+#Sender.java
+//소켓을 통해서 메시지를 보내는 역할
+public class Sender extends Thread {
+  private DataOutputStream dos;
+  private String name;
+
+  public Sender(Socket socket) {
+    name = "[" + socket.getInetAddress() + " : " + socket.getLocalPort() + "]";
+
+    try {
+        dos = new DataOutputStream(socket.getOutputStream());
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+  }
+  
+  @Override
+  public void run() {
+    Scanner scan = new Scanner(System.in);
+    while (dos != null) { // 무한루프
+						  // 언제 멈추지?? :: 안 멈추지~~ 안 멈추게끔 만들어 놓은 거지~~
+      try {
+        dos.writeUTF(name + " >>> " + scan.nextLine()); // scanner: 엔터치기전까지 block
+      } catch (Exception e) {
+      e.printStackTrace();
+      }
+    }
+    scan.close();
+  }
+} // class
+#Receiver.java
+//소켓에서 메시지를 받아서 화면에 출력하는 역할
+public class Receiver extends Thread {
+  private Socket socket;
+  private DataInputStream dis;
+
+  public Receiver(Socket socket) {
+    this.socket = socket;
+
+    try {
+      dis = new DataInputStream(socket.getInputStream());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  @Override
+  public void run() {
+    while(dis != null) {
+      try {
+        System.out.println(dis.readUTF());
+        // -> Sender에서 writeUTF 호출 전까지 block, 
+        //    writeUTF 호출되면 그때부터 read하기 시작
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+} // class
+#TcpServer2.java
+//Sender와 Receiver를 활용한 클래스
+public class TcpServer2 {
+  public static void main(String[] args) throws IOException {
+  
+    ServerSocket socket = new ServerSocket(7777);
+    System.out.println("서버 준비 완료...");
+
+    Socket socket = server.accept();
+
+    System.out.println("서버의 소켓 : " + socket); // toString() 오버라이드 되어있음 :: The toString() method returns the string representation for the given socket.
+
+    Sender sender = new Sender(socket);
+    Receiver receiver = new Receiver(socket);
+
+    sender.start();
+    receiver.start();
+    // 여기까지하면 이제 3개(main+sender+receiver)의 스레드가 작동하는 멀티스레드 프로그램
+  } // main
+} // class
+
+#TcpClient2.java
+public class TcpClient2 {
+  public static void main(String[] args) throws UnknownHostException, IOException {
+  Socket socket = new Socket("localhost", 7777);
+  
+  System.out.println("서버에 연결되었습니다.");
+  System.out.println("클라이언트의 소켓 : " + socket);
+  
+  Sender sender = new Sender(socket);
+  Receiver receiver = new Receiver(socket);
+  
+  sender.start();
+  receiver.start();
+  }
+}
+
+https://velog.io/@godkimchichi/Java-14-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-Socket

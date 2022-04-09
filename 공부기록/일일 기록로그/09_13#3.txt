@@ -1,0 +1,107 @@
+https://it-dolphin.tistory.com/entry/Java-TCP-%EC%86%8C%EC%BC%93%ED%86%B5%EC%8B%A0-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8-%EB%A7%8C%EB%93%A4%EA%B8%B011
+
+"Main Server"
+public class MS{
+	~ main(~ ) {
+		try{
+			ServerSocket ss = new ServerSocket(8888);
+			Socket cs = ss.accept();
+			
+			RT rec_thread = new RT();
+			rec_thread.setSocket(cs);
+			ST send_thread = new ST();
+			send_thread.setSocket(cs);
+			//create receive thread , get socket
+			//create send thread, get socket
+			
+			rec_thread.start();
+			send_thread.start();
+		}catch(IOException e){
+			e.printStackTrace();
+		}		
+	}
+}
+"Main Client"
+public class MC{
+	~main(~){
+		try{
+			Socket cs = new Socket("ServerIP",8888);
+			RT rec_thread = new RT();
+			rec_thread.setSocket(cs);
+			CT send_thread = new CT();
+			send_thread.setSocket(cs);
+			
+			rec_thread.start();
+			send_thread.start();	
+		}catch(IOException e){
+			e.printStackTrace();
+		}	
+	}
+}
+"Send Thread(Server)"
+public class ST extends Thread { 
+	private Socket m_Socket; 
+	public void run(){ 
+		super.run(); 
+		//불필요한것으로 판명 ^^
+		try { 
+			BufferedReader tmpbuf = new BufferedReader(new InputStreamReader(System.in)); 
+			//키보드입력(System.in)의 안내문은 어디있는가?
+			PrintWriter sendWriter = new PrintWriter(m_Socket.getOutputStream()); 
+			//OutputStream with PrintWriter(print,println with formatted objects)
+			String sendString; 
+			while(true){  
+				sendString = tmpbuf.readLine(); //read from System.in (input)
+				sendWriter.println(sendString); //print to socket (output)
+				sendWriter.flush(); //Since PrintWriter sends data only after the buffer is fulled, flush() force to send leftover in buffer to desitination where is client
+				
+				"when does this loop break??"
+				"when does this loop break??"
+				"when does this loop break??"
+				
+			}catch(IOException e) { 
+				e.printStackTrace(); 
+			}
+		}
+	}		//메인문에서 소켓 객체 받아서 내 변수에 대입 public void setSocket(Socket _socket) { //m_Socket에 main에서 만든 소켓 대입 m_Socket = _socket; } }
+	public void setSocket(Socket _socket) { 
+		m_Socket = _socket; 
+	}
+	// 굳이 이렇게 했어야 했나..!! 그냥 생성자로 넘겨도 되지 않았나..!
+}
+"Send Thread(Client)"
+public class CT extends Thread{
+	private Socket m_Socket;
+	
+	public void run(){
+		try{
+			BufferedReader tmpbuf = new BufferedReader(new InputStreamReader(System.in));
+			PrintWriter sendWriter = new PrintWriter(m_Socket.getOutputStream());
+			String sendString;
+			
+			while(true){
+				sendString = tmpbuf.readLine();
+				if(sendString.eqauls("quit")
+					break;
+				else{
+					sendWriter.println(sendString);
+					sendWriter.flush()
+				}
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	public void setSocket(Socket socket){
+		m_Socket = socket;
+	}
+}
+
+
+
+코드가 엉망진창이다.
+
+PrintWriter와 BufferedReader를 잘 활용했다고 치자.
+1. 애초에 Thread를 이용한 Send메소드를 Server/Client로 나눈 이유는 뭐지?
+2. 소켓을 열어놓고 닫지도 않았다.
+3. Thread는 닫았나? 무한정으로 extend thread를 통해 thread형성해나갈 건가?

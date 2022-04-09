@@ -1,0 +1,15 @@
+void bookDeleteInput() 설명
+
+1. 안내문 print
+2. Scanner.nextLine()을 통해 도서의 num입력받기
+3. BookDAO객체 생성
+4. BookDAO.checkNum(num) -> ResultSet으로 num에 해당하는 도서레코드들 저장
+5. 저장된 ResultSet에 대한 조건문
+- if ResultSet의 다음행이 없다면 == 해당번호가 없다면
+	없다는 안내문 print
+- else == 해당번호가 있다면
+	BookDAO.deletBook(num)실행 -> 삭제된 레코드의 num 반환
+		-if 삭제된 레코드 0 이상 == 실제 삭제 되었다면
+		num에 해당하는 도서 삭제 안내문 print
+		-else == 삭제 수행 실패했다면
+		삭제수행실패 안내문 print
