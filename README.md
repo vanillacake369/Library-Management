@@ -5,7 +5,7 @@
 ![UML](https://user-images.githubusercontent.com/75259783/162561426-fe7e57f0-f4ab-40ea-b2d5-deee91877c5e.png)
 
 
-## 유사코드
+## Pseudo-Code
 
 1. Client Side에서 System.out을 통해 키보드로 입력한 option값을 Server로 출력한다
 StrWriter() :: <StringOutputStream Thread화>
